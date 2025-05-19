@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 
 const connectToMongoDB = require('./config/db.config');
+const authRoutes = require('./routes/auth.routes');
 
 // PORT initialization
 const PORT = process.env.PORT || 5000;
@@ -11,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 // App initialization
 const app = express();
 
-// middlewares
+// Middlewares
 app.use(
   cors({
     origin: process.env.CLIENT_URL || '*',
@@ -22,9 +23,8 @@ app.use(
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello World');
-});
+// Api routes
+app.use('/api/v1/auth', authRoutes);
 
 // Listening to server
 app.listen(PORT, () => {
