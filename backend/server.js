@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const connectToMongoDB = require('./config/db.config');
 const authRoutes = require('./routes/auth.routes');
@@ -22,6 +23,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Api routes
 app.use('/api/v1/auth', authRoutes);

@@ -115,9 +115,51 @@ const loginUser = async (req, res) => {
 };
 
 // Handler to get user info
-const getUserInfo = async (req, res) => {};
+const getUserInfo = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: `User not found` });
+    }
+
+    // Add new attributes to response
+    const userInfo = {
+      ...user.toObject(),
+      totalPollsCreated: 0,
+      totalPollsVotes: 0,
+      totalPollsBookmarked: 0,
+    };
+
+    res.status(200).json({ success: false, userInfo });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: `Error fetching user info`,
+      error: error.message,
+    });
+  }
+};
 
 // Handler to add profile pic
-const uploadProfileImage = async (req, res) => {};
+const uploadProfileImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'No files uploaded' });
+    }
+
+    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${
+      req.file.filename
+    }`;
+
+    res.status(200).json({ success: true, imageUrl });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
 
 module.exports = { registerUser, loginUser, getUserInfo, uploadProfileImage };
