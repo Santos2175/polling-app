@@ -3,6 +3,9 @@ import AuthLayout from '../../components/layout/AuthLayout';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthInput from '../../components/ui/AuthInput';
 import { isValidEmail } from '../../utils/helper';
+import axiosInstace from '../../api/axiosInstance';
+import { API_PATHS } from '../../api/config';
+import { useUser } from '../../hooks/useUser';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -11,10 +14,13 @@ const LoginForm = () => {
   });
   const [error, setError] = useState(null);
 
+  const { updateUser } = useUser();
+
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    console.log('Submitting data', formData);
 
     // Validation checks
     if (!isValidEmail(formData.email)) {
@@ -28,7 +34,30 @@ const LoginForm = () => {
     }
 
     setError('');
+
+    // Login API call
+    try {
+      const response = await axiosInstace.post(API_PATHS.AUTH.LOGIN, {
+        ...formData,
+      });
+      console.log(response);
+
+      const { token, user } = response.data?.data;
+
+      if (token) {
+        localStorage.setItem('token', token);
+        updateUser(user);
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError(`Something went wrong. Please try again`);
+      }
+    }
   };
+
   return (
     <AuthLayout>
       <div className='lg:w-[70%] h-3/4 md:h-full flex flex-col justify-center'>
