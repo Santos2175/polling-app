@@ -31,7 +31,7 @@ const registerUser = async (req, res) => {
     if (existingUser) {
       return res
         .status(400)
-        .json({ success: false, error: `Email already in use` });
+        .json({ success: false, message: `Email already in use` });
     }
 
     // Check if username already exists
@@ -87,7 +87,7 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user || !user.comparePassword(password)) {
       return res
-        .status(401)
+        .status(400)
         .json({ success: false, message: `Invalid Credentials` });
     }
 
