@@ -20,7 +20,6 @@ const LoginForm = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log('Submitting data', formData);
 
     // Validation checks
     if (!isValidEmail(formData.email)) {
@@ -40,7 +39,6 @@ const LoginForm = () => {
       const response = await axiosInstace.post(API_PATHS.AUTH.LOGIN, {
         ...formData,
       });
-      console.log(response);
 
       const { token, user } = response.data?.data;
 
