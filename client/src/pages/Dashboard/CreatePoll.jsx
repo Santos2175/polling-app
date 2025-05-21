@@ -24,6 +24,28 @@ const CreatePoll = () => {
     setPollData((prev) => ({ ...prev, [key]: value }));
   };
 
+  // Handle poll creation
+  const handleCreatePoll = async () => {
+    const { question, options, type, imageOptions, error } = pollData;
+
+    if (!question || !type) {
+      handleValueChange('error', 'Question and Type are required.');
+      return;
+    }
+
+    if (type === 'single-choice' && options.length < 2) {
+      handleValueChange('error', 'Enter at least 2 options.');
+      return;
+    }
+
+    if (type === 'image-based' && imageOptions.length < 2) {
+      handleValueChange('error', 'Enter at least 2 options.');
+      return;
+    }
+
+    handleValueChange('error', '');
+  };
+
   return (
     <DashboardLayout activeMenu='Create Poll'>
       <div className='bg-gray-100/80 p-5 my-5 rounded-lg mx-auto'>
@@ -101,6 +123,16 @@ const CreatePoll = () => {
             </div>
           </div>
         )}
+
+        {pollData.error && (
+          <p className='text-xs font-medium text-red-500 mt-5'>
+            {pollData.error}
+          </p>
+        )}
+
+        <button className='btn-primary py-2 mt-6' onClick={handleCreatePoll}>
+          CREATE
+        </button>
       </div>
     </DashboardLayout>
   );
