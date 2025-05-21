@@ -1,15 +1,19 @@
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { useUser } from '../../hooks/useUser';
 import { useUserAuth } from '../../hooks/useUserAuth';
 import { POLL_TYPE } from '../../utils/data';
 import OptionInput from '../../components/ui/OptionInput';
 import OptionImageSelector from '../../components/ui/OptionImageSelector';
+import uploadImage from '../../utils/uploadImage';
+import axiosInstace from '../../api/axiosInstance';
+import { API_PATHS } from '../../api/config';
 
 const CreatePoll = () => {
   useUserAuth();
 
-  const { user } = useUser();
+  const { user, onPollCreateOrDelete } = useUser();
 
   const [pollData, setPollData] = useState({
     question: '',
@@ -20,8 +24,50 @@ const CreatePoll = () => {
     error: '',
   });
 
+  // Update images and get image URLs
+  const updateImageAndGetLink = async (imageOptions) => {
+    const optionPromises = imageOptions.map(async (imageOption) => {
+      try {
+        const imgUploadRes = await uploadImage(imageOption.file);
+        return imgUploadRes.imageUrl || '';
+      } catch (error) {
+        toast.error(`Error uploading image: ${imageOption.file.name}`);
+        return '';
+      }
+    });
+
+    const optionArr = await Promise.all(optionPromises);
+    return optionArr;
+  };
+
+  const getOptionsData = async () => {
+    switch (pollData.type) {
+      case 'single-choice':
+        return pollData.options;
+
+      case 'image-based':
+        const options = await updateImageAndGetLink(pollData.imageOptions);
+        return options;
+
+      default:
+        return [];
+    }
+  };
+
   const handleValueChange = (key, value) => {
     setPollData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  // Clear data
+  const clearData = () => {
+    setPollData({
+      question: '',
+      type: '',
+      options: [],
+      imageOptions: [],
+
+      error: '',
+    });
   };
 
   // Handle poll creation
@@ -44,6 +90,30 @@ const CreatePoll = () => {
     }
 
     handleValueChange('error', '');
+
+    const optionsData = await getOptionsData();
+
+    // API call
+    try {
+      const response = await axiosInstace.post(API_PATHS.POLLS.CREATE, {
+        question,
+        type,
+        options: optionsData,
+      });
+
+      if (response.data) {
+        toast.success('Poll created successfully');
+        onPollCreateOrDelete();
+        clearData();
+      }
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        toast.error(error.response.data.message);
+        handleValueChange('error', error.response.data.message);
+      } else {
+        handleValueChange('error', 'Something went wrong. Please try again.');
+      }
+    }
   };
 
   return (

@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import LoginForm from './pages/Auth/LoginForm';
 import SignUpForm from './pages/Auth/SignUpForm';
 import Home from './pages/Dashboard/Home';
@@ -30,6 +31,14 @@ function App() {
           </Routes>
         </Router>
       </div>
+      <Toaster
+        toastOptions={{
+          style: {
+            className: '',
+            fontSize: '13px',
+          },
+        }}
+      />
     </UserProvider>
   );
 }
