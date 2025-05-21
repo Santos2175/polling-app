@@ -1,3 +1,4 @@
+import CharAvatar from './CharAvatar';
 import StatsInfo from './StatsInfo';
 
 const UserDetailsCard = ({
@@ -12,11 +13,20 @@ const UserDetailsCard = ({
     <div className='bg-slate-100/50 rounded-lg mt-16 overflow-hidden'>
       <div className='w-full h-32 flex justify-center bg-primary relative'>
         <div className='absolute -bottom-10 rounded-full overflow-hidden border-2 border-primary'>
-          <img
-            src={profileImageUrl || ''}
-            alt='Profile Image'
-            className='w-20 h-20 rounded-full bg-slate-400'
-          />
+          {profileImageUrl ? (
+            <img
+              src={profileImageUrl || ''}
+              alt='Profile Image'
+              className='w-20 h-20 rounded-full bg-slate-400'
+            />
+          ) : (
+            <CharAvatar
+              fullName={fullName}
+              width='w-20'
+              height='h-20'
+              style='text-xl'
+            />
+          )}
         </div>
       </div>
 
