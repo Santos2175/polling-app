@@ -4,6 +4,7 @@ import { useUser } from '../../hooks/useUser';
 import { useUserAuth } from '../../hooks/useUserAuth';
 import { POLL_TYPE } from '../../utils/data';
 import OptionInput from '../../components/ui/OptionInput';
+import OptionImageSelector from '../../components/ui/OptionImageSelector';
 
 const CreatePoll = () => {
   useUserAuth();
@@ -79,6 +80,23 @@ const CreatePoll = () => {
               <OptionInput
                 optionList={pollData.options}
                 setOptionList={(value) => handleValueChange('options', value)}
+              />
+            </div>
+          </div>
+        )}
+
+        {pollData.type === 'image-based' && (
+          <div className='mt-5'>
+            <label className='text-xs font-medium text-slate-600'>
+              IMAGE OPTIONS
+            </label>
+
+            <div className='mt-3'>
+              <OptionImageSelector
+                imageList={pollData.imageOptions}
+                setImageList={(value) =>
+                  handleValueChange('imageOptions', value)
+                }
               />
             </div>
           </div>
