@@ -28,7 +28,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Api routes
 app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/poll', pollRoutes);
+app.use('/api/v1/polls', pollRoutes);
 
 // Listening to server
 app.listen(PORT, () => {
