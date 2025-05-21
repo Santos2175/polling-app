@@ -24,6 +24,6 @@ router.post('/:id/vote', authenticate, voteOnPoll);
 router.post('/:id/close', authenticate, closePoll);
 router.post('/:id/bookmark', authenticate, bookmarkPoll);
 router.get('/user/bookmarked', authenticate, getBookmarkedPolls);
-router.delete('/:id/delete', deletePoll);
+router.delete('/:id/delete', authenticate, deletePoll);
 
 module.exports = router;

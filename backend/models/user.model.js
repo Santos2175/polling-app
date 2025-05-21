@@ -24,10 +24,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    bookmarkedPolls: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Poll',
-    },
+    bookmarkedPolls: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Poll',
+      },
+    ],
   },
   { timestamps: true }
 );
