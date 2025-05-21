@@ -6,6 +6,7 @@ const path = require('path');
 
 const connectToMongoDB = require('./config/db.config');
 const authRoutes = require('./routes/auth.routes');
+const pollRoutes = require('./routes/poll.routes');
 
 // PORT initialization
 const PORT = process.env.PORT || 5000;
@@ -27,6 +28,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Api routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/poll', pollRoutes);
 
 // Listening to server
 app.listen(PORT, () => {
