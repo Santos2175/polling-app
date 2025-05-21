@@ -1,5 +1,5 @@
-const bcrypt = require('bcryptjs');
 const User = require('../models/user.model');
+const Poll = require('../models/poll.model');
 const { generateToken } = require('../utils/token');
 
 // Handler to register user
@@ -91,6 +91,15 @@ const loginUser = async (req, res) => {
         .json({ success: false, message: `Invalid Credentials` });
     }
 
+    // Count polls created by user
+    const totalPollsCreated = await Poll.countDocuments({ creator: user._id });
+
+    // Count polls the user has voted
+    const totalPollsVotes = await Poll.countDocuments({ voters: user._id });
+
+    // Count total polls bookmarked
+    const totalPollsBookmarked = user.bookmarkedPolls.length;
+
     res.status(200).json({
       success: true,
       message: `User logged in successfully`,
@@ -98,9 +107,9 @@ const loginUser = async (req, res) => {
         id: user._id,
         user: {
           ...user.toObject(),
-          totalPollsCreated: 0,
-          totalPollsVotes: 0,
-          totalPollsBookmarked: 0,
+          totalPollsCreated,
+          totalPollsVotes,
+          totalPollsBookmarked,
         },
         token: generateToken(user._id),
       },
@@ -124,13 +133,21 @@ const getUserInfo = async (req, res) => {
         .status(404)
         .json({ success: false, message: `User not found` });
     }
+    // Count polls created by user
+    const totalPollsCreated = await Poll.countDocuments({ creator: user._id });
+
+    // Count polls the user has voted
+    const totalPollsVotes = await Poll.countDocuments({ voters: user._id });
+
+    // Count total polls bookmarked
+    const totalPollsBookmarked = user.bookmarkedPolls.length;
 
     // Add new attributes to response
     const userInfo = {
       ...user.toObject(),
-      totalPollsCreated: 0,
-      totalPollsVotes: 0,
-      totalPollsBookmarked: 0,
+      totalPollsCreated,
+      totalPollsVotes,
+      totalPollsBookmarked,
     };
 
     res.status(200).json({ success: false, userInfo });
