@@ -175,10 +175,84 @@ const getAllPolls = async (req, res) => {
 };
 
 // Handler to get voted polls
-const getVotedPolls = async (req, res) => {};
+const getVotedPolls = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const userId = req.user.id;
+
+  try {
+    // Calculate the pagination parameters
+    const pageNumber = parseInt(page, 10);
+    const pageSize = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * pageSize;
+
+    //Fetch polls where user has voted
+    const polls = await Poll.find({ voters: userId })
+      .populate('creator', 'fullName username email profileImageUrl')
+      .populate({
+        path: 'responses.voterId',
+        select: 'fullName username profileImageUrl',
+      })
+      .skip(skip)
+      .limit(pageSize);
+
+    // Add `userHasVoted` flag to each poll
+    const updatedPolls = polls.map((poll) => {
+      const userHasVoted = poll.voters.some((voterId) =>
+        voterId.equals(userId)
+      );
+
+      return {
+        ...poll.toObject(),
+        userHasVoted,
+      };
+    });
+
+    // Get total count of voted polls for pagination metadata
+    const totalVotedPolls = await Poll.countDocuments({ voters: userId });
+
+    res.status(200).json({
+      success: true,
+      message: 'Voted polls',
+      data: {
+        polls: updatedPolls,
+        currentPage: pageNumber,
+        totalPages: Math.ceil(totalVotedPolls / pageSize),
+        totalVotedPolls,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: `Error getting voted polls`,
+      error: error.message,
+    });
+  }
+};
 
 // Handler to get poll by id
-const getPollById = async (req, res) => {};
+const getPollById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const poll = await Poll.findById(id).populate('creator', 'username email');
+
+    if (!poll) {
+      return res
+        .status(404)
+        .json({ success: false, message: `Poll not found` });
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: 'Poll retreived successfully', poll });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: `Error getting poll`,
+      error: error.message,
+    });
+  }
+};
 
 // Handler to vote on poll
 const voteOnPoll = async (req, res) => {
@@ -247,7 +321,45 @@ const voteOnPoll = async (req, res) => {
 };
 
 // Handler to close poll
-const closePoll = async (req, res) => {};
+const closePoll = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const poll = await Poll.findById(id);
+
+    if (!poll) {
+      return res
+        .status(404)
+        .json({ success: false, message: `Poll not found` });
+    }
+
+    // Check if creator and the one who requested to close poll are same
+    if (poll.creator.toString() !== userId) {
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: `You are not authorized to close this poll`,
+        });
+    }
+
+    poll.closed = true;
+    await poll.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: `Poll closed successfully.`, poll });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: `Error closing poll`,
+        error: error.message,
+      });
+  }
+};
 
 // Handler to bookmark poll
 const bookmarkPoll = async (req, res) => {};
