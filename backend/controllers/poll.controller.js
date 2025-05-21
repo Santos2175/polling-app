@@ -78,7 +78,101 @@ const createPoll = async (req, res) => {
 };
 
 // Handler to get all polls
-const getAllPolls = async (req, res) => {};
+const getAllPolls = async (req, res) => {
+  const { type, creatorId, page = 1, limit = 10 } = req.query;
+  const filter = {};
+  const userId = req.user.id;
+
+  if (type) filter.type = type;
+  if (creatorId) filter.creator = creatorId;
+
+  try {
+    // Calculate pagination parameters
+    const pageNumber = parseInt(page, 10);
+    const pageSize = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * pageSize;
+
+    // Fetch all polls with pagination
+    const polls = await Poll.find(filter)
+      .populate('creator', 'fullName username email profileImageUrl')
+      .populate({
+        path: 'responses.voterId',
+        select: 'fullName username profileImageUrl',
+      })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    // Add user has voted for each poll
+    const updatedPolls = polls.map((poll) => {
+      const userHasVoted = poll.voters.some((voterId) =>
+        voterId.equals(userId)
+      );
+
+      return {
+        ...poll.toObject(),
+        userHasVoted,
+      };
+    });
+
+    // Get total of polls for pagination metadata
+    const totalPolls = await Poll.countDocuments(filter);
+
+    const stats = await Poll.aggregate([
+      {
+        $group: {
+          _id: '$type',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          type: '$_id',
+          count: 1,
+          _id: 0,
+        },
+      },
+    ]);
+
+    // Ensure all types are included in stat even those with zero counts
+    const allTypes = [
+      { type: 'single-choice', label: 'Single Choice' },
+      { type: 'yes/no', label: 'Yes/No' },
+      { type: 'image-based', label: 'Image Based' },
+      { type: 'rating', label: 'rating' },
+      { type: 'open-ended', label: 'Open Ended' },
+    ];
+
+    const statsWithDefaults = allTypes
+      .map((pollType) => {
+        const stat = stats.find((item) => item.type === pollType.type);
+
+        return {
+          label: pollType.label,
+          type: pollType.type,
+          count: stat ? stat.count : 0,
+        };
+      })
+      .sort((a, b) => b.count - a.count);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        polls: updatedPolls,
+        currentPage: pageNumber,
+        totalPages: Math.ceil(totalPolls / pageSize),
+        totalPolls,
+        stats: statsWithDefaults,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: `Error getting all polls`,
+      error: error.message,
+    });
+  }
+};
 
 // Handler to get voted polls
 const getVotedPolls = async (req, res) => {};
@@ -87,7 +181,70 @@ const getVotedPolls = async (req, res) => {};
 const getPollById = async (req, res) => {};
 
 // Handler to vote on poll
-const voteOnPoll = async (req, res) => {};
+const voteOnPoll = async (req, res) => {
+  const { id } = req.params;
+  const { optionIndex, responseText } = req.body;
+  const voterId = req.user.id;
+
+  try {
+    const poll = await Poll.findById(id);
+
+    // Check if poll exists
+    if (!poll) {
+      return res
+        .status(404)
+        .json({ success: false, message: `Poll not found` });
+    }
+
+    // Check if poll is closed
+    if (poll.closed) {
+      return res
+        .status(400)
+        .json({ success: false, message: `Poll is closed.` });
+    }
+
+    // Check if user has already voted
+    if (poll.voters.includes(voterId)) {
+      return res.status(400).json({
+        success: false,
+        message: `User has already voted on this poll`,
+      });
+    }
+
+    if (poll.type === 'open-ended') {
+      if (!responseText) {
+        return res.status(400).json({
+          success: false,
+          message: `ResponseText is required for open ended polls`,
+        });
+      }
+      poll.responses.push({ voterId, responseText });
+    } else {
+      if (
+        optionIndex === undefined ||
+        optionIndex < 0 ||
+        optionIndex >= poll.options.length
+      ) {
+        return res
+          .status(400)
+          .json({ success: false, message: `Invalid option index` });
+      }
+      poll.options[optionIndex].votes += 1;
+    }
+
+    // After succesfull voting on poll, update the poll with new voter
+    poll.voters.push(voterId);
+    await poll.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: `Successfully voted`, poll });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: `Voting failed`, error: error.message });
+  }
+};
 
 // Handler to close poll
 const closePoll = async (req, res) => {};
