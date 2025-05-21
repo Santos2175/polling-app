@@ -7,6 +7,7 @@ import {
   LuVote,
 } from 'react-icons/lu';
 
+// Data for side menu
 export const SIDE_MENU_DATA = [
   {
     id: '01',
@@ -39,4 +40,33 @@ export const SIDE_MENU_DATA = [
     path: '/bookmarked-polls',
   },
   { id: '06', label: 'Logout', icon: LuLogOut, path: '/logout' },
+];
+
+// Data for poll type
+export const POLL_TYPE = [
+  {
+    id: '01',
+    label: 'Yes/No',
+    value: 'yes/no',
+  },
+  {
+    id: '02',
+    label: 'Single Choice',
+    value: 'single-choice',
+  },
+  {
+    id: '03',
+    label: 'Image Based',
+    value: 'image-based',
+  },
+  {
+    id: '04',
+    label: 'Rating',
+    value: 'rating',
+  },
+  {
+    id: '05',
+    label: 'Open Ended',
+    value: 'open-ended',
+  },
 ];
