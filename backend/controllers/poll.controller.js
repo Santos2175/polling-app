@@ -258,7 +258,7 @@ const getPollById = async (req, res) => {
 // Handler to vote on poll
 const voteOnPoll = async (req, res) => {
   const { id } = req.params;
-  const { optionIndex, responseText } = req.body;
+  const { optionText, responseText } = req.body;
   const voterId = req.user.id;
 
   try {
@@ -296,15 +296,15 @@ const voteOnPoll = async (req, res) => {
       poll.responses.push({ voterId, responseText });
     } else {
       if (
-        optionIndex === undefined ||
-        optionIndex < 0 ||
-        optionIndex >= poll.options.length
+        optionText === undefined ||
+        optionText < 0 ||
+        optionText >= poll.options.length
       ) {
         return res
           .status(400)
           .json({ success: false, message: `Invalid option index` });
       }
-      poll.options[optionIndex].votes += 1;
+      poll.options[optionText].votes += 1;
     }
 
     // After succesfull voting on poll, update the poll with new voter

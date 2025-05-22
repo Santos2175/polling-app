@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { useUser } from '../../hooks/useUser';
 import { getPollBookmarked } from '../../utils/helper';
 import UserProfileInfo from '../cards/UserProfileInfo';
 import PollActions from './PollActions';
 import PollContent from './PollContent';
+import axiosInstance from '../../api/axiosInstance';
+import { API_PATHS } from '../../api/config';
 
 const PollCard = ({
   pollId,
@@ -20,7 +23,7 @@ const PollCard = ({
   isMyPoll,
   createdAt,
 }) => {
-  const { user } = useUser();
+  const { user, onUserVoted } = useUser();
 
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(-1);
   const [rating, setRating] = useState(0);
@@ -50,6 +53,62 @@ const PollCard = ({
     else setSelectedOptionIndex(value);
   };
 
+  // Generates post data based on the type
+  const getPostData = useCallback(() => {
+    if (type === 'open-minded') {
+      return { responseText: userResponse, voterId: user._id };
+    }
+
+    if (type === 'rating') {
+      return { optionText: rating - 1, voterId: user._id };
+    }
+
+    return { optionText: selectedOptionIndex, voterId: user._id };
+  }, [type, userResponse, rating, selectedOptionIndex, user]);
+
+  // Get Poll Details by ID
+  const getPollDetail = async () => {
+    try {
+      const response = await axiosInstance.get(
+        API_PATHS.POLLS.GET_BY_ID(pollId)
+      );
+
+      if (response.data) {
+        const pollDetails = response.data.poll;
+
+        setPollResult({
+          options: pollDetails.options || [],
+          voters: pollDetails.voters || 0,
+          responses: pollDetails.responses || [],
+        });
+      }
+    } catch (error) {
+      console.error(
+        error.response?.data?.message || 'Error retrieving poll detail'
+      );
+    }
+  };
+
+  // Handles vote submit
+  const handleVoteSubmit = async () => {
+    try {
+      const response = await axiosInstance.post(
+        API_PATHS.POLLS.VOTE(pollId),
+        getPostData()
+      );
+
+      getPollDetail();
+      onUserVoted();
+      setIsVoteComplete(true);
+      toast.success('Vote submitted successfully');
+    } catch (error) {
+      console.error(
+        error.response?.data?.message ||
+          'Error submitting vote. Please try again'
+      );
+    }
+  };
+
   return (
     !pollDeleted && (
       <div className='bg-slate-100/50 my-5 p-5 rounded-lg border border-slate-100 mx-auto'>
@@ -67,7 +126,7 @@ const PollCard = ({
             inputCaptured={
               !!(userResponse || selectedOptionIndex >= 0 || rating)
             }
-            onVoteSubmit={() => {}}
+            onVoteSubmit={handleVoteSubmit}
             isBookmarked={pollBookmarked}
             toggleBookmark={() => {}}
             isMyPoll={isMyPoll}
@@ -81,16 +140,20 @@ const PollCard = ({
           <p className='text-[15px] text-black leading-8'>{question}</p>
 
           <div className='mt-4'>
-            <PollContent
-              type={type}
-              options={options}
-              selectedOptionIndex={selectedOptionIndex}
-              onOptionSelect={handleInput}
-              rating={rating}
-              onRatingChange={handleInput}
-              userResponse={userResponse}
-              onResponseChange={handleInput}
-            />
+            {isVoteComplete || isPollClosed ? (
+              <>Show Result</>
+            ) : (
+              <PollContent
+                type={type}
+                options={options}
+                selectedOptionIndex={selectedOptionIndex}
+                onOptionSelect={handleInput}
+                rating={rating}
+                onRatingChange={handleInput}
+                userResponse={userResponse}
+                onResponseChange={handleInput}
+              />
+            )}
           </div>
         </div>
       </div>

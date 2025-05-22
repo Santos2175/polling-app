@@ -2,7 +2,7 @@ import axios from 'axios';
 import { BASE_URL } from './config';
 
 // Axios instance
-const axiosInstace = axios.create({
+const axiosInstance = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
   headers: {
@@ -12,7 +12,7 @@ const axiosInstace = axios.create({
 });
 
 // Request interceptors
-axiosInstace.interceptors.request.use(
+axiosInstance.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem('token');
 
@@ -28,7 +28,7 @@ axiosInstace.interceptors.request.use(
 );
 
 // Response interceptors
-axiosInstace.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
@@ -49,4 +49,4 @@ axiosInstace.interceptors.response.use(
   }
 );
 
-export default axiosInstace;
+export default axiosInstance;

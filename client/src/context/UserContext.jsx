@@ -30,9 +30,21 @@ export const UserProvider = ({ children }) => {
     );
   };
 
+  // Update total polls voted
+  const onUserVoted = () => {
+    const totalPollsVotes = user.totalPollsVotes || 0;
+    updateUserStats('totalPollsVotes', totalPollsVotes + 1);
+  };
+
   return (
     <UserContext.Provider
-      value={{ user, updateUser, clearUser, onPollCreateOrDelete }}>
+      value={{
+        user,
+        updateUser,
+        clearUser,
+        onPollCreateOrDelete,
+        onUserVoted,
+      }}>
       {children}
     </UserContext.Provider>
   );
