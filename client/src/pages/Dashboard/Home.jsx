@@ -5,6 +5,7 @@ import { useUserAuth } from '../../hooks/useUserAuth';
 import HeaderWithFilter from '../../components/layout/HeaderWithFilter';
 import axiosInstace from '../../api/axiosInstance';
 import { API_PATHS } from '../../api/config';
+import PollCard from '../../components/PollCards/PollCard';
 
 const PAGE_SIZE = 10;
 
@@ -72,6 +73,24 @@ const Home = () => {
           filterType={filterType}
           setFilterType={setFilterType}
         />
+
+        {allPolls.map((poll) => (
+          <PollCard
+            key={`dashboard_${poll._id}`}
+            pollId={poll._id}
+            type={poll.type}
+            question={poll.question}
+            options={poll.options}
+            voters={poll.voters.length || 0}
+            responses={poll.responses || []}
+            creatorProfileImg={poll.creator.profileImageUrl || null}
+            creatorName={poll.creator.fullName}
+            creatorUsername={poll.creator.username}
+            userHasVoted={poll.userHasVoted || false}
+            isPollClosed={poll.closed || false}
+            createdAt={poll.createdAt || null}
+          />
+        ))}
       </div>
     </DashboardLayout>
   );

@@ -34,7 +34,7 @@ const HeaderWithFilter = ({ title, filterType, setFilterType }) => {
           {[{ label: 'All', value: '' }, ...POLL_TYPE].map((type) => (
             <button
               key={type.value}
-              className={`text-[12px] px-4 py-1 rounded-lg text-nowrap ${
+              className={`text-[12px] px-4 py-1 rounded-lg text-nowrap cursor-pointer ${
                 filterType === type.value
                   ? 'text-white bg-sky-900'
                   : 'text-[13px] bg-sky-100'

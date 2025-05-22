@@ -17,3 +17,8 @@ export const getInitials = (name) => {
 
   return initials;
 };
+
+// Utility function to check if poll is bookmarked or not
+export const getPollBookmarked = (pollId, userBookmarks) => {
+  return userBookmarks.includes(pollId);
+};
