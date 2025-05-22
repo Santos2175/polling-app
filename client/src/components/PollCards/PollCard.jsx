@@ -7,6 +7,7 @@ import PollActions from './PollActions';
 import PollContent from './PollContent';
 import axiosInstance from '../../api/axiosInstance';
 import { API_PATHS } from '../../api/config';
+import PollingResultContent from './PollingResultContent';
 
 const PollCard = ({
   pollId,
@@ -55,7 +56,7 @@ const PollCard = ({
 
   // Generates post data based on the type
   const getPostData = useCallback(() => {
-    if (type === 'open-minded') {
+    if (type === 'open-ended') {
       return { responseText: userResponse, voterId: user._id };
     }
 
@@ -78,7 +79,7 @@ const PollCard = ({
 
         setPollResult({
           options: pollDetails.options || [],
-          voters: pollDetails.voters || 0,
+          voters: pollDetails.voters.length || 0,
           responses: pollDetails.responses || [],
         });
       }
@@ -156,7 +157,12 @@ const PollCard = ({
 
           <div className='mt-4'>
             {isVoteComplete || isPollClosed ? (
-              <>Show Result</>
+              <PollingResultContent
+                type={type}
+                options={pollResult.options}
+                voters={pollResult.voters}
+                responses={pollResult.responses}
+              />
             ) : (
               <PollContent
                 type={type}
