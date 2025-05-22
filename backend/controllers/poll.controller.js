@@ -412,13 +412,21 @@ const getBookmarkedPolls = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const user = await User.findById(userId).populate({
-      path: 'bookmarkedPolls',
-      populate: {
-        path: 'creator',
-        select: 'fullName username profileImageUrl',
-      },
-    });
+    const user = await User.findById(userId)
+      .populate({
+        path: 'bookmarkedPolls',
+        populate: {
+          path: 'creator',
+          select: 'fullName username profileImageUrl',
+        },
+      })
+      .populate({
+        path: 'bookmarkedPolls',
+        populate: {
+          path: 'responses.voterId',
+          select: 'fullName username profileImageUrl',
+        },
+      });
 
     if (!user) {
       return res
