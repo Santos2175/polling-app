@@ -7,6 +7,8 @@ import HeaderWithFilter from '../../components/layout/HeaderWithFilter';
 import axiosInstace from '../../api/axiosInstance';
 import { API_PATHS } from '../../api/config';
 import PollCard from '../../components/PollCards/PollCard';
+import EmptyCard from '../../components/cards/EmptyCard';
+import CREATE_ICON from '../../assets/images/my-poll-icon.png';
 
 const PAGE_SIZE = 10;
 
@@ -59,7 +61,7 @@ const Home = () => {
 
   useEffect(() => {
     setPage(1);
-    fetchAllPolls();
+    fetchAllPolls(1);
 
     return () => {};
   }, [filterType]);
@@ -81,12 +83,27 @@ const Home = () => {
           setFilterType={setFilterType}
         />
 
+        {allPolls.length === 0 && !loading && (
+          <EmptyCard
+            imgSrc={CREATE_ICON}
+            message="Welcome! You're the first user of the system and there are no polls yet. Start by creating the first poll."
+            btnText='Create Poll'
+            onClick={() => navigate('/create-poll')}
+          />
+        )}
+
         <InfiniteScroll
           dataLength={allPolls.length}
           next={loadMorePolls}
           hasMore={hasMore}
           loader={<h4 className='info-text'>loading...</h4>}
-          endMessage={<p className='info-text'>No more polls to display</p>}>
+          endMessage={
+            allPolls.length ? (
+              <p className='info-text'>No more polls to display</p>
+            ) : (
+              ''
+            )
+          }>
           {allPolls.map((poll) => (
             <PollCard
               key={`dashboard_${poll._id}`}
