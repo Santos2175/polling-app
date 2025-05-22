@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { useUserAuth } from '../../hooks/useUserAuth';
-import HeaderWithFilter from '../../components/layout/HeaderWithFilter';
 import axiosInstace from '../../api/axiosInstance';
 import { API_PATHS } from '../../api/config';
 import PollCard from '../../components/PollCards/PollCard';
@@ -28,7 +27,7 @@ const VotedPolls = () => {
   };
 
   // Fetch all polls from API
-  const fetchAllPolls = async () => {
+  const fetchAllPolls = useCallback(async () => {
     if (loading) return;
 
     setLoading(true);
@@ -36,11 +35,15 @@ const VotedPolls = () => {
     try {
       const response = await axiosInstace.get(`${API_PATHS.POLLS.VOTED_POLLS}`);
 
-      if (response.data?.data.polls?.length > 0) {
-        setVotedPolls((prevPolls) => [
-          ...prevPolls,
-          ...response.data.data.polls,
-        ]);
+      const responsePolls = response.data.data.polls || [];
+
+      if (responsePolls.length > 0) {
+        setVotedPolls((prevPolls) => {
+          const newVotedPolls = responsePolls.filter(
+            (poll) => !prevPolls.some((prevPoll) => prevPoll._id === poll._id)
+          );
+          return [...prevPolls, ...newVotedPolls];
+        });
         setHasMore(response.data.data.polls.length === PAGE_SIZE);
       } else {
         setHasMore(false);
@@ -50,13 +53,13 @@ const VotedPolls = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, loading]);
 
   useEffect(() => {
     fetchAllPolls();
 
     return () => {};
-  }, [page]);
+  }, [page, fetchAllPolls]);
 
   return (
     <DashboardLayout activeMenu='Voted Polls'>
