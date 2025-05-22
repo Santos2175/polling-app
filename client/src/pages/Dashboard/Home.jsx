@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { useUserAuth } from '../../hooks/useUserAuth';
 import HeaderWithFilter from '../../components/layout/HeaderWithFilter';
@@ -22,6 +23,12 @@ const Home = () => {
 
   const [filterType, setFilterType] = useState('');
 
+  // Load more page for infinite scroll
+  const loadMorePolls = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
+
+  // Fetch all polls from API
   const fetchAllPolls = async (overridePage = page) => {
     if (loading) return;
 
@@ -74,23 +81,30 @@ const Home = () => {
           setFilterType={setFilterType}
         />
 
-        {allPolls.map((poll) => (
-          <PollCard
-            key={`dashboard_${poll._id}`}
-            pollId={poll._id}
-            type={poll.type}
-            question={poll.question}
-            options={poll.options}
-            voters={poll.voters.length || 0}
-            responses={poll.responses || []}
-            creatorProfileImg={poll.creator.profileImageUrl || null}
-            creatorName={poll.creator.fullName}
-            creatorUsername={poll.creator.username}
-            userHasVoted={poll.userHasVoted || false}
-            isPollClosed={poll.closed || false}
-            createdAt={poll.createdAt || null}
-          />
-        ))}
+        <InfiniteScroll
+          dataLength={allPolls.length}
+          next={loadMorePolls}
+          hasMore={hasMore}
+          loader={<h4 className='info-text'>loading...</h4>}
+          endMessage={<p className='info-text'>No more polls to display</p>}>
+          {allPolls.map((poll) => (
+            <PollCard
+              key={`dashboard_${poll._id}`}
+              pollId={poll._id}
+              type={poll.type}
+              question={poll.question}
+              options={poll.options}
+              voters={poll.voters.length || 0}
+              responses={poll.responses || []}
+              creatorProfileImg={poll.creator.profileImageUrl || null}
+              creatorName={poll.creator.fullName}
+              creatorUsername={poll.creator.username}
+              userHasVoted={poll.userHasVoted || false}
+              isPollClosed={poll.closed || false}
+              createdAt={poll.createdAt || null}
+            />
+          ))}
+        </InfiniteScroll>
       </div>
     </DashboardLayout>
   );
