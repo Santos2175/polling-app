@@ -36,6 +36,29 @@ export const UserProvider = ({ children }) => {
     updateUserStats('totalPollsVotes', totalPollsVotes + 1);
   };
 
+  // Toggle bookmark poll
+  const toggleBookmarkId = (id) => {
+    const bookmarks = user.bookmarkedPolls || [];
+
+    const index = bookmarks.indexOf(id);
+
+    if (index == -1) {
+      // Add the id of poll in bookmarks
+      setUser((prev) => ({
+        ...prev,
+        bookmarkedPolls: [...bookmarks, id],
+        totalPollsBookmarked: prev.totalPollsBookmarked + 1,
+      }));
+    } else {
+      // Remove id of poll from bookmarks
+      setUser((prev) => ({
+        ...prev,
+        bookmarkedPolls: bookmarks.filter((bookmarkId) => bookmarkId !== id),
+        totalPollsBookmarked: prev.totalPollsBookmarked - 1,
+      }));
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -44,6 +67,7 @@ export const UserProvider = ({ children }) => {
         clearUser,
         onPollCreateOrDelete,
         onUserVoted,
+        toggleBookmarkId,
       }}>
       {children}
     </UserContext.Provider>
