@@ -24,7 +24,8 @@ const PollCard = ({
   isMyPoll,
   createdAt,
 }) => {
-  const { user, onUserVoted, toggleBookmarkId } = useUser();
+  const { user, onUserVoted, toggleBookmarkId, onPollCreateOrDelete } =
+    useUser();
 
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(-1);
   const [rating, setRating] = useState(0);
@@ -125,6 +126,39 @@ const PollCard = ({
     }
   };
 
+  // Close Poll
+  const handleClosePoll = async () => {
+    try {
+      const response = await axiosInstance.post(API_PATHS.POLLS.CLOSE(pollId));
+
+      if (response.data) {
+        setPollClosed(true);
+        toast.success(response.data?.message || 'Poll Closed Successfully!');
+      }
+    } catch (error) {
+      toast.error(`Something went wrong. Please try again.`);
+      console.error('Something went wrong. please try again.', error);
+    }
+  };
+
+  // Delete Poll
+  const handleDeletePoll = async () => {
+    try {
+      const response = await axiosInstance.delete(
+        API_PATHS.POLLS.DELETE(pollId)
+      );
+
+      if (response.data) {
+        setPollDeleted(true);
+        onPollCreateOrDelete('delete');
+        toast.success(response.data?.message || 'Poll deleted successfully!');
+      }
+    } catch (error) {
+      toast.error('Something went wrong. Please try again.');
+      console.error('Something went wrong. Please try again.', error);
+    }
+  };
+
   return (
     !pollDeleted && (
       <div className='bg-slate-100/50 my-5 p-5 rounded-lg border border-slate-100 mx-auto'>
@@ -147,8 +181,8 @@ const PollCard = ({
             toggleBookmark={toggleBookmark}
             isMyPoll={isMyPoll}
             pollClosed={pollClosed}
-            onClosePoll={() => {}}
-            onDelete={() => {}}
+            onClosePoll={handleClosePoll}
+            onDelete={handleDeletePoll}
           />
         </div>
 

@@ -125,6 +125,7 @@ const MyPolls = () => {
               userHasVoted={poll.userHasVoted || false}
               isPollClosed={poll.closed || false}
               createdAt={poll.createdAt || null}
+              isMyPoll
             />
           ))}
         </InfiniteScroll>
