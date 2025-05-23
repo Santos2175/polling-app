@@ -10,7 +10,7 @@ const HeaderWithFilter = ({ title, filterType, setFilterType }) => {
         <h2 className='sm:text-xl font-medium text-black'>{title}</h2>
 
         <button
-          className={`flex items-center gap-3 text-sm bg-primary text-white px-4 py-2 ${
+          className={`flex items-center gap-3 text-sm bg-primary text-white px-4 py-2 cursor-pointer ${
             open ? 'rounded-t-lg' : 'rounded-lg'
           }`}
           onClick={() => {

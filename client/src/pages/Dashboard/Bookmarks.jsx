@@ -6,7 +6,7 @@ import axiosInstace from '../../api/axiosInstance';
 import { API_PATHS } from '../../api/config';
 import PollCard from '../../components/PollCards/PollCard';
 import EmptyCard from '../../components/cards/EmptyCard';
-import CREATE_ICON from '../../assets/images/my-poll-icon.png';
+import BOOKMARK_ICON from '../../assets/images/bookmark-icon.png';
 import { useUser } from '../../hooks/useUser';
 
 const Bookmarks = () => {
@@ -57,8 +57,8 @@ const Bookmarks = () => {
 
         {bookmarkedPolls.length === 0 && !loading && (
           <EmptyCard
-            imgSrc={CREATE_ICON}
-            message='You have not added any bookmarks yet. Start exploring and add to your bookmarks.'
+            imgSrc={BOOKMARK_ICON}
+            message='You have not added any bookmarks yet. Start bookmarking your favorites.'
             btnText='Explore'
             onClick={() => navigate('/dashboard')}
           />
