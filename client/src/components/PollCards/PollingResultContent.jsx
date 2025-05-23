@@ -83,6 +83,7 @@ const PollingResultContent = ({ type, options, voters, responses }) => {
               totalVotes={voters || 0}
             />
           ))}
+          <p className='text-xs text-slate-600 px-2 py-1'> {voters} Votes</p>
         </>
       );
 
@@ -97,6 +98,7 @@ const PollingResultContent = ({ type, options, voters, responses }) => {
               totalVotes={voters || 0}
             />
           ))}
+          <p className='text-xs text-slate-600 px-2'> {voters} Votes</p>
         </div>
       );
 
