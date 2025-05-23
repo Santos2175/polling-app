@@ -6,7 +6,7 @@ const AuthLayout = ({ children }) => {
     <div className='flex'>
       {/* Left part */}
       <div className='w-screen h-screen md:w-1/2 px-12 pt-8 pb-12'>
-        <h2 className='text-lg font-medium text-black'>Polling App</h2>
+        <h2 className='text-lg font-medium text-black'>BuzzPoll</h2>
         {children}
       </div>
 
