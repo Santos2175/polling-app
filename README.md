@@ -10,7 +10,7 @@
   - [Environment Setup](#environment-setup)
   - [Development with Docker](#development-with-docker)
   - [Development without Docker](#development-without-docker)
-- [Authors](#authurs)
+- [Authors](#authors)
 
 ---
 
@@ -127,6 +127,6 @@ npm run dev
 
 ---
 
-## 👥 Authors
+## Authors
 
 - Santosh Gurung
