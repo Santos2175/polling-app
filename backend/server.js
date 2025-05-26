@@ -9,7 +9,7 @@ const authRoutes = require('./routes/auth.routes');
 const pollRoutes = require('./routes/poll.routes');
 
 // PORT initialization
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 // App initialization
 const app = express();
