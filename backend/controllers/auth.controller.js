@@ -1,6 +1,7 @@
 const User = require('../models/user.model');
 const Poll = require('../models/poll.model');
 const { generateToken } = require('../utils/token');
+const cloudinary = require('../config/cloudinary.config');
 
 // Handler to register user
 const registerUser = async (req, res) => {
@@ -169,11 +170,26 @@ const uploadProfileImage = async (req, res) => {
         .json({ success: false, message: 'No files uploaded' });
     }
 
-    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${
-      req.file.filename
-    }`;
+    // const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${
+    //   req.file.filename
+    // }`;
 
-    res.status(200).json({ success: true, imageUrl });
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            folder: 'polling-app/',
+            resource_type: 'image',
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        )
+        .end(req.file.buffer);
+    });
+
+    res.status(200).json({ success: true, imageUrl: result.secure_url });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
