@@ -17,7 +17,7 @@ import { UserProvider } from './context/UserContext';
 function App() {
   return (
     <UserProvider>
-      <div>
+      <div className='container mx-auto'>
         <Router>
           <Routes>
             <Route path='/' element={<Root />} />
