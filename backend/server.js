@@ -30,6 +30,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/polls', pollRoutes);
 
+// Route to hit by the cron job server to keep the render server alive to avoid cold start
+app.get('/ping', (req, res) => {
+  res.status(200).json({ success: true, message: 'Server is awake' });
+});
+
 // Listening to server
 app.listen(PORT, () => {
   connectToMongoDB();
