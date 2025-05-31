@@ -13,12 +13,14 @@ const LoginForm = () => {
     password: '',
   });
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { updateUser } = useUser();
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
+    if (isLoading) return;
     e.preventDefault();
 
     // Validation checks
@@ -34,6 +36,7 @@ const LoginForm = () => {
 
     setError('');
 
+    setIsLoading(true);
     // Login API call
     try {
       const response = await axiosInstace.post(API_PATHS.AUTH.LOGIN, {
@@ -53,6 +56,8 @@ const LoginForm = () => {
       } else {
         setError(`Something went wrong. Please try again`);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -87,8 +92,13 @@ const LoginForm = () => {
 
           {error && <p className='text-red-500 text-xs pb-2.5'>{error}</p>}
 
-          <button type='submit' className='btn-primary'>
-            LOGIN
+          <button
+            type='submit'
+            className={`btn-primary ${
+              isLoading ? 'bg-primary/15 text-primary' : ''
+            }`}
+            disabled={isLoading}>
+            {isLoading ? 'LOGGING IN' : 'LOGIN'}
           </button>
 
           <p className='text-[13px] text-slate-800 mt-3'>

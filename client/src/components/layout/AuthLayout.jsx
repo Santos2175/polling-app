@@ -22,15 +22,15 @@ const AuthLayout = ({ children }) => {
 
         <img
           src={CARD_1}
-          className='w-52 h-21 lg:h-32 lg:w-80 absolute top-[6%] left-[10%] shadow-lg shadow-blue-400/45 object-contain'
+          className='w-52  lg:h-32 lg:w-80 absolute top-[6%] left-[10%] shadow-lg shadow-blue-400/45 object-contain'
         />
         <img
           src={CARD_2}
-          className='w-64 h-32 lg:h-38 lg:w-88 absolute top-[34%] left-[50%] shadow-lg shadow-blue-400/45 object-contain'
+          className='w-64 lg:h-38 lg:w-88 absolute top-[34%] left-[50%] shadow-lg shadow-blue-400/45 object-contain'
         />
         <img
           src={CARD_3}
-          className='w-64 h-38 lg:h-44 lg:w-96 absolute top-[65%] left-[10%] shadow-lg shadow-blue-400/45 object-contain'
+          className='w-64  lg:h-44 lg:w-96 absolute top-[65%] left-[10%] shadow-lg shadow-blue-400/45 object-contain'
         />
       </div>
     </div>

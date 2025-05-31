@@ -20,10 +20,12 @@ const SignUpForm = () => {
   });
   const { updateUser } = useUser();
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
+    if (isLoading) return;
     e.preventDefault();
 
     let profileImageUrl = '';
@@ -51,6 +53,8 @@ const SignUpForm = () => {
 
     setError('');
 
+    setIsLoading(true);
+
     // SignUp API call
     try {
       if (profilePic) {
@@ -76,6 +80,8 @@ const SignUpForm = () => {
       } else {
         setError(`Something went wrong. Please try again.`);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -134,8 +140,13 @@ const SignUpForm = () => {
 
           {error && <p className='text-xs text-red-500 pb2.5'>{error}</p>}
 
-          <button type='submit' className='btn-primary'>
-            CREATE ACCOUNT
+          <button
+            type='submit'
+            className={`btn-primary ${
+              isLoading ? 'bg-primary/15 text-primary' : ''
+            }`}
+            disabled={isLoading}>
+            {isLoading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT'}
           </button>
 
           <p className='text-[13px] text-slate-800 mt-3'>
