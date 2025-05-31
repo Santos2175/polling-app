@@ -126,6 +126,7 @@ const MyPolls = () => {
               isPollClosed={poll.closed || false}
               createdAt={poll.createdAt || null}
               isMyPoll
+              page='MyPolls'
             />
           ))}
         </InfiniteScroll>

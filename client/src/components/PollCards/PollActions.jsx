@@ -12,6 +12,7 @@ const PollActions = ({
   pollClosed,
   onClosePoll,
   onDelete,
+  page,
 }) => {
   const [loading, setLoading] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -57,19 +58,21 @@ const PollActions = ({
       )}
 
       {/* Mobile menu button */}
-      <div className='sm:hidden relative'>
-        <button
-          className='bg-sky-700/10 p-1 text-slate-600 rounded-md'
-          onClick={() => setShowMenu((prev) => !prev)}>
-          <HiMenu />
-        </button>
+      {page === 'MyPolls' && (
+        <div className='sm:hidden relative'>
+          <button
+            className='bg-sky-700/10 p-1 text-slate-600 rounded-md'
+            onClick={() => setShowMenu((prev) => !prev)}>
+            <HiMenu />
+          </button>
 
-        {showMenu && (
-          <div className='absolute top-[110%] -left-6 bg-sky-100 p-2 rounded-md z-10 flex flex-col gap-1 shadow'>
-            {actionButtons}
-          </div>
-        )}
-      </div>
+          {showMenu && (
+            <div className='absolute top-[110%] -left-6 bg-sky-100 p-2 rounded-md z-10 flex flex-col gap-1 shadow'>
+              {actionButtons}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Desktop action buttons */}
       <div className='hidden sm:flex gap-4'>{actionButtons}</div>

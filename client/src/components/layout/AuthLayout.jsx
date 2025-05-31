@@ -1,5 +1,7 @@
 import UI_ELEMENT from '../../assets/images/ui-element.png';
-import CARD_1 from '../../assets/images/auth-card.png';
+import CARD_1 from '../../assets/images/auth_card1.png';
+import CARD_2 from '../../assets/images/auth_card2.png';
+import CARD_3 from '../../assets/images/auth_card3.png';
 
 const AuthLayout = ({ children }) => {
   return (
@@ -20,15 +22,15 @@ const AuthLayout = ({ children }) => {
 
         <img
           src={CARD_1}
-          className='w-64 h-56 lg:w-72 absolute top-[6%] left-[10%] shadow-xs shadow-blue-400/15'
+          className='w-52 h-21 lg:h-36 lg:w-80 absolute top-[6%] left-[10%] shadow-lg shadow-blue-400/45 object-contain'
         />
         <img
-          src={CARD_1}
-          className='w-64 h-56 lg:w-72 absolute top-[34%] left-[54%] shadow-xs shadow-blue-400/15'
+          src={CARD_2}
+          className='w-64 h-32 lg:h-38 lg:w-88 absolute top-[34%] left-[50%] shadow-lg shadow-blue-400/45 object-contain'
         />
         <img
-          src={CARD_1}
-          className='w-64 h-56 lg:w-72 absolute top-[70%] left-[10%] shadow-xs shadow-blue-400/15'
+          src={CARD_3}
+          className='w-64 h-38 lg:h-44 lg:w-96 absolute top-[65%] left-[10%] shadow-lg shadow-blue-400/45 object-contain'
         />
       </div>
     </div>

@@ -23,6 +23,7 @@ const PollCard = ({
   isPollClosed,
   isMyPoll,
   createdAt,
+  page,
 }) => {
   const { user, onUserVoted, toggleBookmarkId, onPollCreateOrDelete } =
     useUser();
@@ -183,6 +184,7 @@ const PollCard = ({
             pollClosed={pollClosed}
             onClosePoll={handleClosePoll}
             onDelete={handleDeletePoll}
+            page={page}
           />
         </div>
 
