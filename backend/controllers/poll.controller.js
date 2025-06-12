@@ -235,7 +235,9 @@ const getPollById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const poll = await Poll.findById(id).populate('creator', 'username email');
+    const poll = await Poll.findById(id)
+      .populate('creator', 'username email')
+      .populate('responses.voterId', 'username profileImageUrl fullName');
 
     if (!poll) {
       return res

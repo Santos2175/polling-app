@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useUser } from '../../hooks/useUser';
 import { getPollBookmarked } from '../../utils/helper';
@@ -95,12 +95,9 @@ const PollCard = ({
   // Handles vote submit
   const handleVoteSubmit = async () => {
     try {
-      const response = await axiosInstance.post(
-        API_PATHS.POLLS.VOTE(pollId),
-        getPostData()
-      );
+      await axiosInstance.post(API_PATHS.POLLS.VOTE(pollId), getPostData());
 
-      getPollDetail();
+      await getPollDetail();
       onUserVoted();
       setIsVoteComplete(true);
       toast.success('Vote submitted successfully');

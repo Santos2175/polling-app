@@ -11,9 +11,10 @@ import axiosInstace from '../../api/axiosInstance';
 import { API_PATHS } from '../../api/config';
 
 const CreatePoll = () => {
+  const [isLoading, setIsLoading] = useState(false);
   useUserAuth();
 
-  const { user, onPollCreateOrDelete } = useUser();
+  const { onPollCreateOrDelete } = useUser();
 
   const [pollData, setPollData] = useState({
     question: '',
@@ -72,6 +73,8 @@ const CreatePoll = () => {
 
   // Handle poll creation
   const handleCreatePoll = async () => {
+    if (isLoading) return;
+
     const { question, options, type, imageOptions, error } = pollData;
 
     if (!question || !type) {
@@ -93,6 +96,7 @@ const CreatePoll = () => {
 
     const optionsData = await getOptionsData();
 
+    setIsLoading(true);
     // API call
     try {
       const response = await axiosInstace.post(API_PATHS.POLLS.CREATE, {
@@ -113,6 +117,8 @@ const CreatePoll = () => {
       } else {
         handleValueChange('error', 'Something went wrong. Please try again.');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -200,8 +206,13 @@ const CreatePoll = () => {
           </p>
         )}
 
-        <button className='btn-primary py-2 mt-6' onClick={handleCreatePoll}>
-          CREATE
+        <button
+          className={`btn-primary py-2 mt-6 ${
+            isLoading ? 'bg-primary/15 text-primary' : ''
+          }`}
+          onClick={handleCreatePoll}
+          disabled={isLoading}>
+          {isLoading ? 'CREATING POLL...' : 'CREATE'}
         </button>
       </div>
     </DashboardLayout>

@@ -1,5 +1,6 @@
 import { formatDistanceToNow } from 'date-fns';
 import CharAvatar from '../cards/CharAvatar';
+import { useEffect } from 'react';
 
 // Poll result based on single-choice, yes/no and rating;
 const PollOptionVoteResult = ({ label, optionVotes, totalVotes }) => {
@@ -108,8 +109,8 @@ const PollingResultContent = ({ type, options, voters, responses }) => {
           <OpenEndedPollResponse
             key={response._id}
             profileImageUrl={response.voterId?.profileImageUrl}
-            userFullName={response.voterId?.fullName || 'John Dickel'}
-            response={response.responseText || ''}
+            userFullName={response.voterId?.fullName}
+            response={response.responseText}
             createdAt={
               response.createdAt
                 ? formatDistanceToNow(new Date(response.createdAt), {
